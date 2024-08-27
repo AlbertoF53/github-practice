@@ -1,0 +1,88 @@
+---
+title: "marquee graphs"
+author: "Ansgar Wolsing"
+date: june 1 2024
+format:
+  html:
+    code-link: true
+    code-fold: true
+    self-contained: true
+    embed-resources: true
+    toc: true
+    theme: Zephyr
+    number-sections: false
+execute: 
+  warning: false
+  message: false
+  echo: false
+editor_options: 
+  chunk_output_type: console
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r load_libraries}
+#| echo: true
+
+library(tidyverse)
+library(marquee)
+library(palmerpenguins)
+
+
+```
+
+You can add options to executable code like this
+
+```{r graphing}
+#| echo: true
+
+
+reg_line_grob <- grid::linesGrob(
+  x = c(0, 1), y = 0.5, gp = grid::gpar(lwd = 2, col = "grey23")
+)
+
+point_grob <- grid::pointsGrob(
+  x = 0.5, y = 0.5, pch = 19, gp = grid::gpar(
+    lwd = 2, col = "grey23",
+    cex = 0.5
+  )
+)
+
+penguins |>
+  na.omit() |>
+  ggplot(aes(bill_length_mm, bill_depth_mm)) +
+  geom_point(
+    aes(fill = species),
+    shape = 21, stroke = 0.2, size = 2, color = "white", alpha = 0.9
+  ) +
+  geom_smooth(aes(color = species), method = "lm", se = FALSE) +
+  scale_fill_manual(
+    values = c("#AA4A44", "#E1B30F", "#DB880E"),
+    aesthetics = c("fill", "color")
+  ) +
+  labs(
+    title = "Bill depth by bill length for {.#AA4A44 _Adelie_},
+  {.#E1B30F _Chinstrap_}, and {.#DB880E _Gentoo_} penguins",
+    subtitle = "![](reg_line_grob) = Regression lines by species
+  ![](point_grob) = Individual measurements",
+    x = "Bill length (nm)", y = "Bill depth (mm)"
+  ) +
+  theme_minimal(base_family = "Outfit Light") %+replace%
+  theme(
+    plot.background = element_rect(color = "white", fill = "white"),
+    plot.title = element_marquee(
+      family = "Outfit Light", width = 0.95, hjust = 0, size = 13
+    ),
+    plot.subtitle = element_marquee(hjust = 0, size = 11),
+    plot.title.position = "plot",
+    panel.grid.minor = element_blank(),
+    legen.position = "none"
+  )
+
+```
